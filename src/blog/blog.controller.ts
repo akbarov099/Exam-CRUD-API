@@ -7,9 +7,14 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFile,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { diskStorage } from "multer";
+import { extname } from "path";
 import { BlogDto } from "src/blog/dto/blog.dto";
 import { BlogService } from "./blog.service";
 
@@ -25,9 +30,26 @@ export class BlogController {
 
   @HttpCode(201)
   @Post("create")
+  @UseInterceptors(
+    FileInterceptor("file", {
+      storage: diskStorage({
+        destination: "./uploads",
+        filename: (req, file, cb) => {
+          const uniqueSuffix =
+            Date.now() + "-" + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+        },
+      }),
+    })
+  )
   @UsePipes(ValidationPipe)
-  async create(@Body() dto: BlogDto) {
-    return this.blogService.create(dto);
+  async create(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() dto: BlogDto
+  ) {
+    const imagePath = file ? `/uploads/${file.filename}` : undefined;
+    return this.blogService.create({ ...dto, image: imagePath });
   }
 
   @HttpCode(200)
@@ -45,6 +67,6 @@ export class BlogController {
   @HttpCode(200)
   @Delete(":id")
   async delete(@Param("id") id: string) {
-    return this.blogService.delete(id)
+    return this.blogService.delete(id);
   }
 }

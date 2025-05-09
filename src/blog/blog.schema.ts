@@ -14,6 +14,10 @@ export class Blog {
 
   @Prop({ required: true })
   description: string;
+
+  @Prop({ required: false }) 
+  image?: string;  
 }
+
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);

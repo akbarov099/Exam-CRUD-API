@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsString, IsOptional } from "class-validator";
 
 export class BlogDto {
   @IsString()
@@ -12,4 +12,8 @@ export class BlogDto {
   @IsString()
   @IsNotEmpty()
   description: string;
+
+  @IsOptional()
+  @IsString()
+  image?: string;  
 }

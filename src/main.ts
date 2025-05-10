@@ -9,7 +9,7 @@ async function bootstrap() {
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
   app.enableCors({
-    origin: 'https://your-frontend-domain.com', 
+    origin: '*', 
     methods: 'GET, POST, PATCH, DELETE',
     allowedHeaders: 'Content-Type, Authorization',
   });
